@@ -49,91 +49,92 @@
 % r1 = reshape(r, [numel(r), 1]);
 % std(r1)/mean(r1)
 
-% centralY = 1750;
-% spanY = 5;
+centralY = 561;
+spanY = 5;
 % 
 % %centralX = 1473;
 % centralX = 2945;
 % spanX = 2944;
+% % 
+path = 'c:/scans/MP/ffc';
 % 
-% path = 'c:/scans/iffc';
+t = Tiff(sprintf('%s/B1-gain.tif', path), 'r');
+gain = read(t);
+t = Tiff(sprintf('%s/B1-offset.tif', path), 'r');
+dark = read(t);
 % 
-% t = Tiff(sprintf('%s/B1-gain-al00.tif', path), 'r');
-% gain = read(t);
-% t = Tiff(sprintf('%s/B1-offset.tif', path), 'r');
-% dark = read(t);
-% 
-% 
-% 
+% % 
+% % 
 % thicks = { 'B1-gain-al01', 'B1-gain-al02', 'B1-gain-al03', 'B1-gain-al04', 'B1-gain-al05', 'B1-gain-al06', 'B1-gain-al07', 'B1-gain-al08', 'B1-gain-al09', ...
-%            'B1-gain-al10', 'B1-gain-al11', 'B1-gain-al12', 'B1-gain-al13', 'B1-gain-al14', 'B1-gain-al15', 'B1-gain-al16', 'B1-gain-al17', 'B1-gain-al18', 'B1-gain-al19', ...
-%            'B1-gain-al20', 'B1-gain-al21', 'B1-gain-al22', 'B1-gain-al23', 'B1-gain-al24', 'B1-gain-al25', 'B1-gain-al26', 'B1-gain-al27', 'B1-gain-al28', 'B1-gain-al29', ...
-%            'B1-gain-al30', 'B1-gain-al31', 'B1-gain-al32', 'B1-gain-al33', 'B1-gain-al34'};
-% rr = zeros(spanY*2, size(dark, 2), numel(thicks));
-% m = zeros(spanY*2, size(dark, 2), numel(thicks));
+%            'B1-gain-al10', 'B1-gain-al11' };
+thicks = { 'B1-gain-curr50', 'B1-gain-curr46', 'B1-gain-curr42', 'B1-gain-curr38', 'B1-gain-curr34', 'B1-gain-curr30', 'B1-gain-curr26', 'B1-gain-curr22', ...
+           'B1-gain-curr18', 'B1-gain-curr14', 'B1-gain-curr10'};
+rr = zeros(spanY*2, size(dark, 2), numel(thicks));
+m = zeros(spanY*2, size(dark, 2), numel(thicks));
+
+
+% tif = Tiff(sprintf('%s/%s.tif', path, char(thicks(1))), 'r');
+% img = read(tif);
 % 
+% tif = Tiff(sprintf('%s/%s.tif', path, char(thicks(2))), 'r');
+% img2 = read(tif);
 % 
-% % tif = Tiff(sprintf('%s/%s.tif', path, char(thicks(1))), 'r');
-% % img = read(tif);
-% % 
-% % tif = Tiff(sprintf('%s/%s.tif', path, char(thicks(2))), 'r');
-% % img2 = read(tif);
-% % 
-% % imagesc(img)
-% % 
-% % return;
+% imagesc(img)
 % 
-% 
-% for t=1:numel(thicks)
-%    
-%     tif = Tiff(sprintf('%s/%s.tif', path, char(thicks(t))), 'r');
-%     img = double(read(tif));
-%     
-%     r = img./double(gain);
-%     rr(:, :, t) = r(centralY-spanY:centralY+(spanY-1), :);
-%      
-%     for y=1:spanY*2
-%         profile = rr(y, :, t);
-%         [xData, yData] = prepareCurveData( 1:numel(profile), profile );
-% 
-%         %plot(1:numel(profile), profile, '.-b');
-% 
-%         %return;
-% %         ft = fittype( 'sin1' );
-% %         opts = fitoptions( 'Method', 'NonlinearLeastSquares' );
-% %         opts.Display = 'Off';
-% %        opts.Lower = [-Inf 0 -Inf];
-% %        opts.StartPoint = [0.207400238446752 0.000533649168267334 -0.0261106105938564];
-% 
+% return;
+
+
+for t=1:numel(thicks)
+   
+    tif = Tiff(sprintf('%s/%s.tif', path, char(thicks(t))), 'r');
+    img = double(read(tif));
+    
+    r = (img-double(dark))./double(gain-dark);
+    rr(:, :, t) = r(centralY-spanY:centralY+(spanY-1), :);
+     
+    for y=1:spanY*2
+        profile = rr(y, :, t);
+        [xData, yData] = prepareCurveData( 1:numel(profile), profile );
+
+        %plot(1:numel(profile), profile, '.-b');
+
+        %return;
+%         ft = fittype( 'sin1' );
+%         opts = fitoptions( 'Method', 'NonlinearLeastSquares' );
+%         opts.Display = 'Off';
+%        opts.Lower = [-Inf 0 -Inf];
+%        opts.StartPoint = [0.207400238446752 0.000533649168267334 -0.0261106105938564];
+
+        
+        ft = fittype( 'poly9' );
+        opts = fitoptions( 'Method', 'LinearLeastSquares' );
+        opts.Robust = 'Bisquare';
+        
+        
+        [fitresult, gof] = fit( xData, yData, ft, opts );     
+        
+        gyk = zeros(numel(profile), 1);
+        for i=1:numel(profile)
+            gyk(i) = feval(fitresult, i);
+        end
+        m(y, :, t) = gyk;
+        
+        m(y, :, t) = mean(gyk); % curr
+        
 %         
-% 
-% 
-%         ft = fittype( 'poly9' );
-%         opts = fitoptions( 'Method', 'LinearLeastSquares' );
-%         opts.Robust = 'Bisquare';
-%         
-%         
-%         [fitresult, gof] = fit( xData, yData, ft, opts );     
-%         
-%         gyk = zeros(numel(profile), 1);
-%         for i=1:numel(profile)
-%             gyk(i) = feval(fitresult, i);
-%         end
-%         m(y, :, t) = gyk;
-% 
-%         
-% %         if (y == 2)
-% %             plot(1:numel(profile), profile, char(colors(y+1))); hold on;
-% %             plot(1:numel(profile), gyk, char(colors(y))); hold on;
-% %         end
-%     
-%     end
-% 
-%     t
-%     
-%     %break;
-%     
-% end
+%          if (y == 2)
+%              plot(1:numel(profile), profile, '.-b'); hold on;
+%              plot(1:numel(profile), gyk, '.-r'); hold on;
+%              return;
+%          end
+    
+    end
+
+    t
+    
+    %break;
+    
+end
 % 
 % return
 
@@ -153,7 +154,7 @@
 
 
 
-path = 'e:/iffc/test4/tifs';
+path = 'c:/scans/MP/beton/tifs';
 
 uncorr = 0;
 
@@ -164,7 +165,7 @@ for proj=0:225
 tif = Tiff(sprintf('%s/img__%04d.tif', path, proj), 'r');
 %tif = Tiff(sprintf('%s/ffc/al-5mm.tif', path), 'r');
 img = read(tif);
-img = double((img - dark).*1) ./ double(gain);
+img = double((img - dark).*1) ./ double(gain - dark);
 img = img(centralY-spanY:centralY+(spanY-1), :);
 
 % m = zeros(numel(thicks), 1);
@@ -205,13 +206,13 @@ for x=1:size(rr, 2)
                 f = (img(y, x) - p1_pixel) / (p2_pixel - p1_pixel);
                 val_corr = p1_corr + f * (p2_corr - p1_corr);
                 tifCorr(y, x) = round(65535/exp(val_corr));
-
-                break;
+% 
+%                 break;
 
                 %p2_corr = mean(mean(rr(max(y-around, 1):min(y+around, size(rr, 1)), max(x-around, 1):min(x+around, size(rr, 2)), t)));
-                f = (p1_pixel - img(y, x)) / (p1_pixel - p2_pixel);
-                val_corr = p1_corr - f * (p1_corr - p2_corr);
-                tifCorr(y, x) = round(65535/(1.1/val_corr));
+%                 f = (p1_pixel - img(y, x)) / (p1_pixel - p2_pixel);
+%                 val_corr = p1_corr - f * (p1_corr - p2_corr);
+%                 tifCorr(y, x) = round(65535/(1.1/val_corr));
 
                 break;
             end
@@ -238,7 +239,7 @@ end
 
 %uncorr
 
-t = Tiff(sprintf('%s/corr/img_%04d.tif', path, proj), 'w');
+t = Tiff(sprintf('%s/corr-curr/img_%04d.tif', path, proj), 'w');
 %t = Tiff(sprintf('%s/r.tif', path), 'w');
 tagstruct.ImageLength = size(tifCorr,1);
 tagstruct.ImageWidth = size(tifCorr,2);
@@ -248,8 +249,8 @@ tagstruct.BitsPerSample = 16;
 tagstruct.SamplesPerPixel = 1;
 tagstruct.PlanarConfiguration = Tiff.PlanarConfiguration.Chunky;
 setTag(t,'ResolutionUnit',Tiff.ResolutionUnit.Inch);
-setTag(t,'XResolution',298.82);
-setTag(t,'YResolution',298.82);
+setTag(t,'XResolution',513.13);
+setTag(t,'YResolution',513.13);
 tagstruct.Software = 'MATLAB'; 
 setTag(t,tagstruct);
 write(t,tifCorr);
