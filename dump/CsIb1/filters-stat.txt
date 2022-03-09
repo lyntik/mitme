@@ -1,0 +1,3 @@
+[blank] Mean: 1.0224 (51221) STDF: 1.5025 STD%: pix - 0.0066 (SNR 150.6272), ffc only - 0.0005, final - 0.0067 (real - 0.0140 0.0138 0.0139)
+[al-3mm] Mean: 0.3834 (19210) STDF: 1.4189 STD%: pix - 0.0102 (SNR 97.6792), ffc only - 0.0027, final - 0.0106 (real - 0.0161 0.0163 0.0162)
+[al-5mm] Mean: 0.2542 (12738) STDF: 1.4334 STD%: pix - 0.0127 (SNR 78.7337), ffc only - 0.0028, final - 0.0130 (real - 0.0180 0.0181 0.0180)
