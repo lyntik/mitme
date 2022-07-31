@@ -49,33 +49,26 @@
 % r1 = reshape(r, [numel(r), 1]);
 % std(r1)/mean(r1)
 
-centralY = 650;
-spanY = 51;
+centralY = 561;
+spanY = 5;
 % % 
 % % %centralX = 1473;
 % % centralX = 2945;
 % % spanX = 2944;
 % % % 
-path = 'd:/scans/mp3/1000';
-
-t = Tiff(sprintf('%s/gain-0000.tif', path), 'r');
+path = 'c:/scans/MP/ffc-curr';
+% 
+t = Tiff(sprintf('%s/B1-gain.tif', path), 'r');
 gain = read(t);
-t = Tiff(sprintf('%s/offset.tif', path), 'r');
+t = Tiff(sprintf('%s/B1-offset.tif', path), 'r');
 dark = read(t);
 % % 
 % % % 
 % % % 
 % thicks = { 'B1-gain-al01', 'B1-gain-al02', 'B1-gain-al03', 'B1-gain-al04', 'B1-gain-al05', 'B1-gain-al06', 'B1-gain-al07', 'B1-gain-al08', 'B1-gain-al09' };
 %            %'B1-gain-al10', 'B1-gain-al11' };
-% thicks = { 'gain-0001', 'gain-0002', 'gain-0003', 'gain-0004', 'gain-0005', 'gain-0006', 'gain-0007', 'gain-0008', 'gain-0009', 'gain-0010', 'gain-0011', 'gain-0012', 'gain-0013', ...
-%     'gain-0014', 'gain-0015', 'gain-0016', 'gain-0017', 'gain-0018', 'gain-0019', 'gain-0020', 'gain-0021', 'gain-0022', 'gain-0023', 'gain-0024', 'gain-0025', ...
-%     'gain-0026', 'gain-0027', 'gain-0028', 'gain-0029', 'gain-0030', 'gain-0031', 'gain-0032', 'gain-0033', 'gain-0034', 'gain-0035', 'gain-0036', 'gain-0036', ...
-%     'gain-0037', 'gain-0038', 'gain-0039', 'gain-0040', 'gain-0041', 'gain-0042', 'gain-0043', 'gain-0044', 'gain-0045', 'gain-0046', 'gain-0047', 'gain-0048', ...
-%     'gain-0049', 'gain-0050', 'gain-0051', 'gain-0052'};
-%thicks = { 'gain-0001', 'gain-0002', 'gain-0003', 'gain-0004', 'gain-0005', 'gain-0006', 'gain-0007','gain-0008', 'gain-0009', 'gain-0010', 'gain-0011', 'gain-0013' };
-thicks = {  'gain-0007', 'gain-0013' };
-%thicks2 = {  'gain-0011_3', 'gain-0013_3' };
-
+thicks = { 'B1-gain-curr50', 'B1-gain-curr46', 'B1-gain-curr42', 'B1-gain-curr38', 'B1-gain-curr34', 'B1-gain-curr30', 'B1-gain-curr26', 'B1-gain-curr22', ...
+           'B1-gain-curr18', 'B1-gain-curr14', 'B1-gain-curr10'};
 % rr = zeros(spanY*2, size(dark, 2), numel(thicks));
 % m = zeros(spanY*2, size(dark, 2), numel(thicks));
 % 
@@ -95,10 +88,6 @@ for t=1:numel(thicks)
    
     tif = Tiff(sprintf('%s/%s.tif', path, char(thicks(t))), 'r');
     img = double(read(tif));
-    
-    %tif2 = Tiff(sprintf('%s/%s.tif', path, char(thicks2(t))), 'r');
-    %img2 = double(read(tif));    
-    %img = (img + img2) ./ 2;
     
     r = (img-double(dark))./double(gain-dark);
     rr(:, :, t) = r(centralY-spanY:centralY+(spanY-1), :);
@@ -128,9 +117,9 @@ for t=1:numel(thicks)
         for i=1:numel(profile)
             gyk(i) = feval(fitresult, i);
         end
-        m(y, :, t) = gyk;
+        %m(y, :, t) = gyk;
         
-        %m(y, :, t) = mean(gyk); % curr
+        m(y, :, t) = mean(gyk); % curr
         
 %         
 %          if (y == 2)
@@ -165,15 +154,15 @@ end
 
 
 
-path = 'd:/scans/rain/al1_mp3/tiffs';
+path = 'c:/scans/MP/beton2/tifs';
 
 uncorr = 0;
 
 proj = 0;
-for proj=0:299
+for proj=0:899
 %proj = -100;
 
-tif = Tiff(sprintf('%s/img4__%04d.tif', path, proj), 'r');
+tif = Tiff(sprintf('%s/img__%04d.tif', path, proj), 'r');
 %tif = Tiff(sprintf('%s/ffc/al-5mm.tif', path), 'r');
 img = read(tif);
 img = double((img - dark).*1) ./ double(gain - dark);
@@ -229,20 +218,20 @@ for x=1:size(rr, 2)
                 break;
             end
     
-          if (t == numel(thicks))
+            if (t == numel(thicks))
                 %ME = MException('MyComponent:noSuchVariable', ...
                 %'Value is less than with the filter with maximum thickness');
                 %throw(ME)
-
+                
                  x
                  y
                  img(y, x)
                  proj
                  %return;
-    %                 
-              tifCorr(y, x) = round(65535/(1.1/img(y, x)));
-              uncorr = uncorr + 1;
-          end
+%                 
+                tifCorr(y, x) = round(65535/(1.1/img(y, x)));
+                uncorr = uncorr + 1;
+            end
 
         end
     end        
@@ -251,7 +240,7 @@ end
 
 %uncorr
 
-t = Tiff(sprintf('%s/corr/img_%04d.tif', path, proj), 'w');
+t = Tiff(sprintf('%s/corr-curr/img_%04d.tif', path, proj), 'w');
 %t = Tiff(sprintf('%s/r.tif', path), 'w');
 tagstruct.ImageLength = size(tifCorr,1);
 tagstruct.ImageWidth = size(tifCorr,2);
@@ -261,8 +250,8 @@ tagstruct.BitsPerSample = 16;
 tagstruct.SamplesPerPixel = 1;
 tagstruct.PlanarConfiguration = Tiff.PlanarConfiguration.Chunky;
 setTag(t,'ResolutionUnit',Tiff.ResolutionUnit.Inch);
-setTag(t,'XResolution',298.82);
-setTag(t,'YResolution',298.82);
+setTag(t,'XResolution',513.13);
+setTag(t,'YResolution',513.13);
 tagstruct.Software = 'MATLAB'; 
 setTag(t,tagstruct);
 write(t,tifCorr);

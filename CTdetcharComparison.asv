@@ -116,10 +116,38 @@ close all;
 % close(rpt);
 % return;
 
+br = PageBreak();
+rpt.add(br);
+
+
+% Resolution
+
+
+
+colorIndex = 1;
+for d=1:numel(detectors)
+    load(sprintf('dump/%s.mat', char(detectors(d))));
+    
+    plot([1 23], MTFs, char(colors(colorIndex)), 'DisplayName', char(detectors(d))); hold on;
+    colorIndex = colorIndex + 1;
+    if (colorIndex == 8)
+        colorIndex = 1;
+    end
+end
+legend('show');
+title('Resolution');
+xlabel('Magnification');
+ylabel('Resolution, um');
+fig = Figure();
+fig.Snapshot.Caption = 'Resolution is determined by finding MTF(I2-I1)/(I1+I2) level 10%';
+add(rpt, fig);
+close all;
 
 % close(rpt);
 % return;
 
+br = PageBreak();
+rpt.add(br);
 
 % Rest
 % rmse = zeros(numel(detectors), 1);
@@ -149,8 +177,6 @@ DetectorsAlivePixelsNumber = zeros(1, numel(detectors));
 DetectorsInstabilityPixs = zeros(1, numel(detectors));
 Detectorsinstability2CurrentPixs = zeros(1, numel(detectors));
 
-DetectorsResolutions = zeros(numel(detectors), 2);
-
 for d=1:numel(detectors)
     load(sprintf('dump/%s.mat', char(detectors(d))));
     DetectorsDeadPixelsNumber(d) = deadPixelsNumber;
@@ -160,10 +186,7 @@ for d=1:numel(detectors)
     DetectorsAlivePixelsNumber(d) = alivePixelsNumber;
     DetectorsInstabilityPixs(d) = instabilityPixs;
     Detectorsinstability2CurrentPixs(d) = instability2CurrentPixs;
-    DetectorsResolutions(d, :) = Resolutions;
 end
-
-% Resolution
 
 t = [{'Parameter name' detectors(1) detectors(2)
     'Dead pixels (<0.5mean)' sprintf('%d (%.4f %%)', DetectorsDeadPixelsNumber(1), DetectorsDeadPixelsNumber(1)/DetectorsTotalPixelsNumber(1) * 100)  sprintf('%d (%.4f %%)', DetectorsDeadPixelsNumber(2), DetectorsDeadPixelsNumber(2)/DetectorsTotalPixelsNumber(2) * 100);
@@ -171,8 +194,6 @@ t = [{'Parameter name' detectors(1) detectors(2)
     'Heterogeneous pixels (<0.5mean)' sprintf('%d (%.4f %%)', DetectosHetersPixs(1), DetectosHetersPixs(1)/DetectorsAlivePixelsNumber(1) * 100)  sprintf('%d (%.4f %%)', DetectosHetersPixs(2), DetectosHetersPixs(2)/DetectorsAlivePixelsNumber(2) * 100);
     'Instability pixels (>0.02 dev/mean)' sprintf('%d (%.4f %%)', DetectorsInstabilityPixs(1), DetectorsInstabilityPixs(1)/DetectorsAlivePixelsNumber(1) * 100)  sprintf('%d (%.4f %%)', DetectorsInstabilityPixs(2), DetectorsInstabilityPixs(2)/DetectorsAlivePixelsNumber(2) * 100);
     'Instability pixels x2 current test (>0.02 change)' sprintf('%d (%.4f %%)', Detectorsinstability2CurrentPixs(1), Detectorsinstability2CurrentPixs(1)/DetectorsAlivePixelsNumber(1) * 100)  sprintf('%d (%.4f %%)', Detectorsinstability2CurrentPixs(2), Detectorsinstability2CurrentPixs(2)/DetectorsAlivePixelsNumber(2) * 100);
-    'Resolution M1', sprintf('%.2f um', DetectorsResolutions(1, 1)), sprintf('%.2f um', DetectorsResolutions(2, 1));
-    'Resolution M23', sprintf('%.2f um', DetectorsResolutions(1, 2)), sprintf('%.2f um', DetectorsResolutions(2, 2));
      }];
 
 table = BaseTable(t);

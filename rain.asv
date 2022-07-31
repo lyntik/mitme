@@ -1,0 +1,44 @@
+
+
+
+[raw] = loadMetaImage('d:/scans/rain/nofilter/img_.mhd');
+roi = squeeze(raw(:, 500, :))';
+% imagesc(roi);
+
+x = 1:numel(sinoSum);
+sinoSum = sum(roi, 1);
+
+[coeffs, y] = fito(x, sinoSum, 'poly8');
+
+% ft = fittype( 'sin1' );
+% opts = fitoptions( 'Method', 'NonlinearLeastSquares' );
+% opts.Display = 'Off';
+% opts.Lower = [-Inf 0 -Inf];
+% opts.StartPoint = [0.207400238446752 0.000533649168267334 -0.0261106105938564];
+% ft = fittype( 'poly9' );
+% opts = fitoptions( 'Method', 'LinearLeastSquares' );
+% opts.Robust = 'Bisquare';
+% 
+% 
+% [fitresult, gof] = fit( xData, yData, ft, opts );     
+% 
+% gyk = zeros(numel(profile), 1);
+% for i=1:numel(profile)
+%     gyk(i) = feval(fitresult, i);
+% end
+% 
+
+plot(x, sinoSum, '.-b'); hold on;
+plot(x, y, '.-r'); hold on;
+
+diff = sinoSum - y';
+
+std(diff)/mean(sinoSum)*
+mean(sinoSum)/std(diff)
+
+
+% r = raw(971:1070, 2175:2256);
+% r = reshape(r, [numel(r), 1]);
+% mean(r)
+% std(r)
+% 
