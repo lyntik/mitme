@@ -18,7 +18,7 @@ x = 1:numel(sinoSum);
 [coeffs, y] = fito(x, sinoSum, 'poly8');
 
 % ft = fittype( 'sin1' );
-% opts = fitoptions( 'Method', 'NonlinearLeastSquares' );•
+% opts = fitoptions( 'Method', 'NonlinearLeastSquares' );
 % opts.Display = 'Off';
 % opts.Lower = [-Inf 0 -Inf];
 % opts.StartPoint = [0.207400238446752 0.000533649168267334 -0.0261106105938564];

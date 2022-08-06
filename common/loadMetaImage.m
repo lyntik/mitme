@@ -1,10 +1,16 @@
-function [raw] = loadMetaImage(filepath)
+function [raw, spacingOut] = loadMetaImage(filepath)
 
 fileID = fopen(filepath);
 header = fread(fileID, [1, 1000], '*char')
 
 pos = strfind(header,'DimSize');
 dim = sscanf(header(pos:end),'DimSize = %d %d %d');
+
+pos = strfind(header,'ElementSpacing');
+spacing = sscanf(header(pos:end),'ElementSpacing = %f %f %f');
+if (nargout > 1) 
+    spacingOut = spacing;
+end
 
 pos = strfind(header,'ElementType');
 elementType = sscanf(header(pos:end),'ElementType = %s')
@@ -15,6 +21,7 @@ elseif (strcmp(elementType, 'MET_FLOAT') == 1)
 else
     error('ElementType is not supported.')
 end
+
  
 pos = strfind(header,'ElementDataFile');
 dataFile = sscanf(header(pos:end),'ElementDataFile = %s')
