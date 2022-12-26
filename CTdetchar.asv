@@ -1,15 +1,13 @@
 
 
-path = 'c:\lol\b1';
-%path = 'd:\Teledyne\char';
+path = 'c:\000-preCT';
 
-%norm = [1 700./200];
-norm = [1 1];
 
-%X = 1150/1;
-%Y = 609/1;
-X = 2681/1;
-Y = 2896/1;
+slice = loadMetaImage(sprintf('%s/disc/1_%d/V/slice.mha', path, i));
+000-preCT\Finding-QuantumEfficiency\img-0.mhd 
+
+return;
+
 
 import mlreportgen.dom.*
 import mlreportgen.report.*
@@ -22,11 +20,6 @@ tp.PubDate = date();
 rpt.add(tp);
 br = PageBreak();
 rpt.add(br);
-
-% textObj = Text('Radiography configuration');
-% textObj.Style = {HAlign('center')};
-% rpt.add(textObj);
-
 
 
 %%%%%%%%%%%%%% ROI part
@@ -131,8 +124,10 @@ fig.Snapshot.Caption = 'One of the most important characteristic for CT. It esti
 add(rpt, fig);
 close all;
 
-path = 'd:\Teledyne-CD42M2221\char\b1';
-%path = 'd:\Teledyne_\char';
+return;
+
+%path = 'd:\Teledyne-CD42M2221\char\b1';
+path = 'd:\Teledyne_\char';
 
 % SNRs
 % SNROverPixels
@@ -382,10 +377,19 @@ add(rpt,table);
 % pic.Height = "6in";
 % add(rpt, pic);
 
-%% MTF
+%% Resolution
 chapter = mlreportgen.report.Chapter();
 chapter.Title = 'Resolution';
 add(rpt,chapter);
+
+t = [{'SDD' '347 mm' ;
+     'HV' '130 kV' ;
+     'Current' '50 mkA' ;
+     'Focus' '8um'
+     }];
+table = BaseTable(t);
+table.Title = 'Configuration';
+add(rpt,table);
 
 pic = Image(sprintf('%s/mtf/M1_.png', path));
 pic.Style = {ScaleToFit};
@@ -400,25 +404,14 @@ textObj = Text('M23');
 textObj.Style = {HAlign('center')};
 rpt.add(textObj);
 
-t = [{'Magnification ' sprintf('%d (%.4f %%)', deadPixelsNumber, deadPixelsNumber/totalPixelsNumber * 100);
-    'Hot pixels (>1.5mean)' sprintf('%d (%.4f %%)', hotPixelsNumber, hotPixelsNumber/totalPixelsNumber * 100);
-    'Heterogeneous pixels (>0.1meanR)' sprintf(' %d (%.4f %%) \n', hetersPixs, hetersPixs / alivePixelsNumber * 100 );
-    'Instability pixels (>0.02 dev/mean)' sprintf('%d (%.4f %%) \n', instabilityPixs, instabilityPixs / alivePixelsNumber * 100 );
-    'Instability pixels x2 current test (>0.02 change)' sprintf('%d (%.4f %%) \n', instability2CurrentPixs, instability2CurrentPixs / alivePixelsNumber * 100 );
-     }];
-
-
-MTFs = [67.334 4.839];
-%MTFs = [83.345 6.84];
-plot([1, 23], MTFs, '.-b');
-xlabel('Magnification');
-ylabel('Resolution');
-fig = mlreportgen.report.Figure();
-fig.Snapshot.Caption = 'Resolution is determined by finding MTF(I2-I1)/(I1+I2) level 10% ';
-fig.Snapshot.Height = '10in';
-add(rpt, fig);
-close all;
+%Resolutions = [67.334 4.839];
+Resolutions = [83.345 6.84];
+t = [{'Magnification 1' sprintf('%.2f um', Resolutions(1));
+    'Magnification 23' sprintf('%.2f um', Resolutions(2))  }];
+table = BaseTable(t);
+table.Title = 'Resolution';
+add(rpt,table);
 
 close(rpt);
-save('dump/save.mat', 'SNRs', 'SNROverPixels', 'crosstalk', 'deadPixelsNumber', 'hotPixelsNumber', 'totalPixelsNumber', 'hetersPixs', 'alivePixelsNumber', 'instabilityPixs', 'instability2CurrentPixs', 'MTFs');
+save('dump/save.mat', 'SNRs', 'SNROverPixels', 'crosstalk', 'deadPixelsNumber', 'hotPixelsNumber', 'totalPixelsNumber', 'hetersPixs', 'alivePixelsNumber', 'instabilityPixs', 'instability2CurrentPixs', 'Resolutions');
 

@@ -8,14 +8,14 @@ r = 2.*randn(1,1);
 % return;
 
 
-calibPath = 'c:/scans/mp9';
+calibPath = 'd:/scans/mp9';
 points = [2 4];
 
 tif = Tiff(sprintf('%s/offset.tif', calibPath), 'r');
 dark = double(read(tif));
 tif = Tiff(sprintf('%s/gain.tif', calibPath), 'r');
 gain = double(read(tif));
-[raw] = loadMetaImage('c:/scans/rain9/12_10000_1/img_.mhd');
+[raw] = loadMetaImage('d:scans/rain9/12_10000_1/img_.mhd');
 
 raw = raw(:, :, 1:10000);
 
@@ -45,15 +45,15 @@ snrPix = mean(snrPix)
 
 
 %% mean drift
-avg = 1;
+avg = 100;
 
 % sel = squeeze(raw(col, row, :)) - dark(row, col);
 % sel = sel(1:numel(sel) - mod(numel(sel), avg));
 % sel = reshape(sel, [avg numel(sel)/avg]);
 % sel = sum(sel, 1);
 % first = sel(1);
-%plot(1:numel(sel), sel, '.-b', 'DisplayName', 'Pixel mean'); hold on;    
-%plot(1:numel(sel), (sel-first)/first * 100, '.-b', 'DisplayName', 'Pixel mean'); hold on;    
+% plot(1:numel(sel), sel, '.-b', 'DisplayName', 'Pixel mean'); hold on;
+% plot(1:numel(sel), (sel-first)/first * 100, '.-b', 'DisplayName', 'Pixel mean'); hold on;    
 
 cols = 10:100;
 rows = 10:100;
@@ -81,7 +81,7 @@ end
 colorIndex = 1;
 colorInd = 1;
 step = idivide(int32(pointsNum), 5);
-for p=2:step:pointsNum
+for p=2:4:20
     [y, x] = histcounts(means(:, :, p));
     sum(y)
     plot(x(2:end), y, nextcolor(), 'DisplayName', sprintf('%d minutes', round((single(p)/pointsNum*116)))); hold on;

@@ -1,4 +1,112 @@
 
+
+[raw, spacing] = loadMetaImage('d:/scans/CHAR/2430T-2inst/0/img-0.mhd');
+roi = squeeze(raw(:, :, 3));
+imagesc(roi');
+
+return;
+
+calibPath = 'd:/scans/DMPFFC';
+
+
+tif = Tiff(sprintf('%s/offset.tif', calibPath), 'r');
+dark = double(read(tif));
+tif = Tiff(sprintf('%s/dmpgain-0001-0000.tif', calibPath), 'r');
+gain = double(read(tif));
+
+gyk = zeros(12, 1);
+gyk2 = zeros(12, 1);
+
+cols = 500:2500;
+rows = 600:700;
+
+pointsNum = 30;
+means = zeros(numel(rows), numel(cols), pointsNum);
+rr = zeros(numel(rows), numel(cols), pointsNum);
+
+first = zeros(numel(rows), numel(cols));
+
+
+
+for i=1:6
+    [raw] = loadMetaImage(sprintf('d:/scans/DMPFFC/dmpgain-%d-12/img_.mhd', i));
+    raw(:, :, 1) = raw(:, :, 2);    
+
+    avg = 100;
+    
+    rowInd = 1;
+    
+    for row=rows
+        colInd = 1;
+        for col=cols
+            sel = squeeze(raw(col, row, :)) - dark(row, col);
+            sel = sel(1:numel(sel) - mod(numel(sel), avg));
+            sel = reshape(sel, [avg numel(sel)/avg]);
+            sel = sum(sel, 1) / avg;
+            
+           
+
+            if (i == 1)
+                first(rowInd, colInd) = sel(1);
+            end
+
+            means(rowInd, colInd, (i-1)*5+1:(i-1)*5+1+4) = ((sel-first(rowInd, colInd))/-first(rowInd, colInd) * 100);
+            rr(rowInd, colInd, (i-1)*5+1:(i-1)*5+1+4) = double(sel)./double(gain(row,col)-dark(row, col));
+            colInd = colInd + 1;
+        end
+    
+        rowInd = rowInd + 1;
+    end
+    
+end
+    
+
+% for lol=1:5
+%     figure(lol);
+%     colorIndex = 1;
+%     colorInd = 1;
+%     step = idivide(int32(pointsNum), 5);
+%     for p=(lol-1)*5+1:1:(lol-1)*5+1+4
+%         if (p == 1) continue; end
+%         [y, x] = histcounts(means(:, :, p));
+%         sum(y)
+%         plot(x(2:end), y, nextcolor(), 'DisplayName', sprintf('%d minutes', round((single(p)/pointsNum*116)))); hold on;
+%     end    
+%     legend('show');
+% end
+
+row = 12
+plot(1:size(rr, 2), rr(row, :, 1), '.-b'); hold on;
+plot(1:size(rr, 2), (rr(row, :, 1) + rr(row, :, 2)) ./ 2 + 0.01, '.-b'); hold on;
+plot(1:size(rr, 2), (rr(row, :, 1) + rr(row, :, 2) + rr(row, :, 3)) ./ 3 + 0.02, '.-b'); hold on;
+plot(1:size(rr, 2), (rr(row, :, 1) + rr(row, :, 2) + rr(row, :, 3) + rr(row, :, 4)) ./ 4 + 0.03, '.-b'); hold on;
+plot(1:size(rr, 2), (rr(row, :, 1) + rr(row, :, 2) + rr(row, :, 3) + rr(row, :, 4) + rr(row, :, 5)) ./ 5 + 0.04, '.-b'); hold on;
+
+plot(1:size(rr, 2), (rr(row, :, 6) + rr(row, :, 7) + rr(row, :, 8) + rr(row, :, 9) + rr(row, :, 10)) ./ 5 + 0.05, '.-b'); hold on;
+
+row = 12
+plot(1:size(rr, 2), rr(row, :, 6), '.-b'); hold on;
+plot(1:size(rr, 2), (rr(row, :, 6) + rr(row, :, 7)) ./ 2 + 0.01, '.-b'); hold on;
+plot(1:size(rr, 2), (rr(row, :, 6) + rr(row, :, 7) + rr(row, :, 8)) ./ 3 + 0.02, '.-b'); hold on;
+plot(1:size(rr, 2), (rr(row, :, 6) + rr(row, :, 7) + rr(row, :, 8) + rr(row, :, 9)) ./ 4 + 0.03, '.-b'); hold on;
+plot(1:size(rr, 2), (rr(row, :, 6) + rr(row, :, 7) + rr(row, :, 8) + rr(row, :, 9) + rr(row, :, 10)) ./ 5 + 0.04, '.-b'); hold on;
+
+%ylim([0 max(reshape(rr, [numel(rr) 1])) * 1.1 ])
+
+
+%plot(1:30, squeeze(means(12, 10, :)), '.-b');
+
+    
+% plot(1:numel(gyk), gyk, '.-b');
+% plot(1:numel(gyk2), gyk2, '.-b');
+% % 
+% g = reshape(gyk, [2 6]);
+% g = sum(g, 1);
+% g =  (g-g(1))/g(1) * 100;
+% plot(1:numel(g), g, '.-b');
+
+return;
+
 [x y] = loadXY('c:\work\build-untitled2-Desktop_Qt_5_12_10_MSVC2017_64bit-Debug\1.txt');
 plot(x, y, '.-b');
 

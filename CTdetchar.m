@@ -1,15 +1,14 @@
 
 
-path = 'c:\lol2';
-%path = 'd:\Teledyne\char';
+path = 'd:/scans/CHAR/2430T-2inst/000-preCT';
 
-%norm = [1 700./200];
-norm = [1 1];
 
-X = 1150/1;
-Y = 609/1;
-%X = 2681/1;
-%Y = 2896/1;
+raw = loadMetaImage(sprintf('%s/Finding-QuantumEfficiency/img-0.mhd', path));
+g = sum(raw, 3) / size(raw, 3);
+
+
+return;
+
 
 import mlreportgen.dom.*
 import mlreportgen.report.*
@@ -22,11 +21,6 @@ tp.PubDate = date();
 rpt.add(tp);
 br = PageBreak();
 rpt.add(br);
-
-% textObj = Text('Radiography configuration');
-% textObj.Style = {HAlign('center')};
-% rpt.add(textObj);
-
 
 
 %%%%%%%%%%%%%% ROI part
@@ -130,6 +124,8 @@ fig = mlreportgen.report.Figure();
 fig.Snapshot.Caption = 'One of the most important characteristic for CT. It estimates fundamental detector heterogeneity over pixels. Its impossible to get CT image with noise less than this characteristic, because averaging doesnt effect on it. The calculation process involves gathering huge statistics such that poisson noise implied not affecting the result. Then STD over pixels is calculated using the same spectrum conditions for them.';
 add(rpt, fig);
 close all;
+
+return;
 
 %path = 'd:\Teledyne-CD42M2221\char\b1';
 path = 'd:\Teledyne_\char';
