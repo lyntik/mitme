@@ -87,12 +87,13 @@ for proj1=1:subsetSize:size(img, 3)
         sino = sum(img(:, :, proj1:proj2), 3);
         sino1 = medianFilter(sino, medianSpan, 2);
         
-        gr = zeros(size(sino));
-        for row=1:size(img, 1)
-            for x=2:n
-                gr(row, x) = abs(sino1(row, x) - sino1(row, x-1));
-            end
-        end
+%         gr = zeros(size(sino));
+%         for row=1:size(img, 1)
+%             for x=2:n
+%                 gr(row, x) = abs(sino1(row, x) - sino1(row, x-1));
+%             end
+%         end
+        gr = gradient(sino1, 1, 2);
         gr = medianFilter(gr, medianSpan, 2);
         gr = gr./max(gr);        
         
@@ -107,22 +108,22 @@ for proj1=1:subsetSize:size(img, 3)
         % 
         % plot3(xx, yy, gr);
         
-        ind = ones(size(sino)).*3;
-        ind(gr>0.1)=1;
-        
-        for row=1:size(sino, 1)
-            for x=append+1:n
-                if (ind(row, x)==1 && ind(row, x-1)==3)
-                    ind(ind(row, x-append:x-1)==3) = 2;
-                end  
-            end 
-            for x=n-append:-1:1
-                if (ind(row, x)==1 && ind(row, x+1)==3)
-                    ind(ind(row, x+1:x+append)==3) = 2;
-                end  
-            end 
-        end
-        
+%         ind = ones(size(sino)).*3;
+%         ind(gr>0.1)=1;
+%         
+%         for row=1:size(sino, 1)
+%             for x=append+1:n
+%                 if (ind(row, x)==1 && ind(row, x-1)==3)
+%                     ind(ind(row, x-append:x-1)==3) = 2;
+%                 end  
+%             end 
+%             for x=n-append:-1:1
+%                 if (ind(row, x)==1 && ind(row, x+1)==3)
+%                     ind(ind(row, x+1:x+append)==3) = 2;
+%                 end  
+%             end 
+%         end
+%         
         
         return;
         
