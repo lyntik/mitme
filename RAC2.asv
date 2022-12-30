@@ -147,7 +147,7 @@ for proj1=1:subsetSize:size(img, 3)
 %                     ind(ind(row, x-append:x-1)==3) = 2;
 %                 end  
 %             end 
-%              for x=n-append:-1:1
+%        +      for x=n-append:-1:1
 %                 if (ind(row, x)==1 && ind(row, x+1)==3)
 %                     ind(ind(row, x+1:x+append)==3) = 2;
 %                 end  
@@ -216,8 +216,8 @@ for proj1=1:subsetSize:size(img, 3)
 %          end
 %      end        
 
-     for i1=3:n1-2
-         for i2=3:n2-2
+     for i1=2:n1-1
+         for i2=2:n2-1
              if (coeffsInd(i1, i2) == 1)
                  around = coeffsInd(i1-2:i1+2, i2-2:i2+2);
                  if (sum(around(:)) > 13)
