@@ -1,39 +1,23 @@
 % 
-% mu = [0 0];
-% x1 = -30:30;
-% x2 = -30:40;
-% [X1,X2] = meshgrid(x1,x2);
-% X = [X1(:) X2(:)];
+% sigma1 = 1;
 % 
-% y = mvnpdf(X,mu,eye(2).*0.5);
-% y = reshape(y,length(x2),length(x1));
-% 
-% %y = y./sum(y(:));
-% 
-% surf(x1,x2,y)
-% %caxis([min(y(:))-0.5*range(y(:)),max(y(:))])
-% %axis([-3 3 -3 3 0 0.4])
-% xlabel('x1')
-% ylabel('x2')
-% zlabel('Probability Density')
-% 
-% return;
-
-% xx = zeros(size(gr));
-% for y=1:size(gr, 1)
-%     xx(y, :) = 1:1200;
+% % mu = [0 0];
+% % x1 = -5:5;
+% % x2 = -5:5;
+% % [X1,X2] = meshgrid(x1,x2);
+% % X = [X1(:) X2(:)];
+% % gauss1 = mvnpdf(X,mu,eye(2).*sigma1);
+% % gauss1 = reshape(gauss1,length(x2),length(x1));
+% % gauss1 = gauss1./sum(gauss1(:))
+%         
+% gaussMy = zeros(size(gauss1));
+% for xx1=x1
+%     for xx2=x2
+%         gaussMy(xx2+6, xx1+6) = exp(-( xx1^2/(2*sigma1^2) + xx2^2/(2*sigma1^2)));
+%     end
 % end
-% yy = zeros(size(gr));
-% for x=1:size(gr, 2)
-%     yy(:, x) = 1:100;
-% end
+% gaussMy = gaussMy./sum(gaussMy(:))
 % 
-% plot3(xx, yy, ind);
-% 
-% return;
-% 
-% A = [1 1 1; 5 5 5; 2 2 2];
-% r = medianFilter(A, 1, 2);
 % 
 % return;
 
